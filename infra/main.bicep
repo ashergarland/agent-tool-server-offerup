@@ -9,7 +9,7 @@ param environmentName string
 param location string = deployment().location
 
 @description('Immutable container image reference used on the second pass.')
-param containerImage string = 'registry.invalid/agent-tool-server-offerup@sha256:0000000000000000000000000000000000000000000000000000000000000000'
+param containerImage string = ''
 
 @description('False for the prerequisite pass; true only after the Key Vault secret and image exist.')
 param deployApp bool = false

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "agent-tool-server-offerup",
+  "name": "OfferUp Agent Tool Server",
+  "description": "Self-hosted integration-status server; marketplace access is blocked pending an authorized OfferUp API.",
+  "lifecycle": "development",
+  "version": "0.1.0",
+  "repository": "https://github.com/ashergarland/agent-tool-server-offerup",
+  "license": "MIT",
+  "maintainer": "@ashergarland",
+  "categories": ["marketplaces"],
+  "tags": ["offerup", "mcp", "integration-status"],
+  "interfaces": {
+    "transports": ["stdio", "streamable-http", "openapi-http"],
+    "hosting": "self-hosted",
+    "authentication": ["api-key", "none"],
+    "requiredConfiguration": [
+      {
+        "name": "API_KEYS",
+        "required": true,
+        "secret": true,
+        "description": "Comma-separated API keys for hosted invocation routes."
+      },
+      {
+        "name": "PUBLIC_BASE_URL",
+        "required": false,
+        "secret": false,
+        "description": "Public base URL included in generated OpenAPI metadata."
+      }
+    ]
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "offerup_integration_status",
+        "summary": "Report whether an authorized OfferUp provider integration is available.",
+        "safety": "low",
+        "behavior": "read-only",
+        "consequential": false,
+        "availability": "available"
+      }
+    ]
+  },
+  "operations": {
+    "leastPrivilege": true,
+    "scopeAllowLists": true,
+    "mutationsDisabledByDefault": true,
+    "explicitMutationConfirmation": false,
+    "dryRun": false,
+    "auditLogging": true,
+    "credentialPersistence": "none",
+    "inputValidation": true,
+    "outputValidation": true,
+    "rateLimiting": true,
+    "healthMonitoring": true
+  },
+  "provenance": {
+    "sourceMetadata": {
+      "kind": "server-json",
+      "location": "server.json"
+    },
+    "reviewStatus": "pending",
+    "notes": [
+      "No authorized public OfferUp marketplace API was found; no marketplace tools are advertised.",
+      "No npm package, container publication, MCP Registry listing, Docker catalog entry, hosted endpoint, or OfferUp affiliation is claimed."
+    ]
+  }
+}

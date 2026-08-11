@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ashergarland/agent-tool-server-offerup",
+  "description": "Integration-ready server that reports OfferUp provider availability without marketplace access.",
+  "repository": {
+    "url": "https://github.com/ashergarland/agent-tool-server-offerup",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [],
+  "remotes": []
+}

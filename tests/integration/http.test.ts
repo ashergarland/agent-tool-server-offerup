@@ -77,9 +77,8 @@ describe('HTTP API', () => {
       headers: { authorization: ['Bearer', apiKey].join(' ') },
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json().tools.map((tool: { name: string }) => tool.name)).toEqual([
-      'offerup_integration_status',
-    ]);
+    const body = response.json<{ tools: Array<{ name: string }> }>();
+    expect(body.tools.map((tool) => tool.name)).toEqual(['offerup_integration_status']);
     expect(response.body).not.toContain(apiKey);
   });
 
@@ -154,7 +153,10 @@ describe('HTTP API', () => {
   it('serves complete OpenAPI without marketplace operations', async () => {
     const response = await server().inject({ method: 'GET', url: '/openapi.json' });
     expect(response.statusCode).toBe(200);
-    const document = response.json();
+    const document = response.json<{
+      openapi: string;
+      paths: Record<string, unknown>;
+    }>();
     expect(document.openapi).toBe('3.1.0');
     expect(document.paths['/tools/offerup_integration_status']).toBeDefined();
     expect(document.paths['/tools/offerup_search_listings']).toBeUndefined();

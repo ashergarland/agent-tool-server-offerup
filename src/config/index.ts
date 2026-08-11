@@ -11,15 +11,6 @@ const csv = z
   .pipe(z.array(z.string().min(1)))
   .catch([] as string[]);
 
-const booleanish = z.union([z.boolean(), z.string()]).transform((value, context) => {
-  if (typeof value === 'boolean') return value;
-  const normalized = value.trim().toLowerCase();
-  if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
-  if (['false', '0', 'no', 'off'].includes(normalized)) return false;
-  context.addIssue({ code: 'custom', message: 'Expected a boolean value' });
-  return z.NEVER;
-});
-
 export const withoutBlankValues = (source: NodeJS.ProcessEnv): NodeJS.ProcessEnv =>
   Object.fromEntries(
     Object.entries(source).filter(([, value]) => value === undefined || value.trim() !== ''),

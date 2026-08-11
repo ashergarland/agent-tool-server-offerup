@@ -32,8 +32,8 @@ credentials, or marketplace results.
 
 The sole tool is:
 
-| Tool | Classification | Result |
-| --- | --- | --- |
+| Tool                         | Classification                           | Result                                                                                                   |
+| ---------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | `offerup_integration_status` | Read-only server/integration information | Reports that the provider and marketplace capabilities are unavailable and lists enablement requirements |
 
 No listing search, listing retrieval, messaging, purchasing, posting, account, or mutation tool
@@ -70,15 +70,15 @@ stdio MCP ──────┘                                      └──�
 
 ## Interfaces
 
-| Interface | Route/entry point | Authentication |
-| --- | --- | --- |
-| Health | `GET /health` | Public |
-| Version/capabilities | `GET /version` | Public |
-| OpenAPI 3.1 | `GET /openapi.json` | Public |
-| Tool discovery | `GET /tools` | Hosted auth |
-| Tool invocation | `POST /tools/{toolName}` | Hosted auth |
-| Streamable HTTP MCP | `POST /mcp` | Hosted auth |
-| Local MCP | `npm run mcp:stdio` after build | Local process boundary |
+| Interface            | Route/entry point               | Authentication         |
+| -------------------- | ------------------------------- | ---------------------- |
+| Health               | `GET /health`                   | Public                 |
+| Version/capabilities | `GET /version`                  | Public                 |
+| OpenAPI 3.1          | `GET /openapi.json`             | Public                 |
+| Tool discovery       | `GET /tools`                    | Hosted auth            |
+| Tool invocation      | `POST /tools/{toolName}`        | Hosted auth            |
+| Streamable HTTP MCP  | `POST /mcp`                     | Hosted auth            |
+| Local MCP            | `npm run mcp:stdio` after build | Local process boundary |
 
 `GET` and `DELETE /mcp` are also wired for protocol compatibility. There is no server-side MCP
 session or credential store.
@@ -104,20 +104,20 @@ when a deployment needs a cross-replica quota.
 
 Copy `.env.example`; it contains names and safe empty placeholders only.
 
-| Variable | Required | Default | Purpose |
-| --- | --- | --- | --- |
-| `NODE_ENV` | No | `development` | `development`, `test`, or `production` |
-| `PORT` / `HOST` | No | `8080` / `0.0.0.0` | Listener |
-| `LOG_LEVEL` | No | `info` | Structured log level |
-| `SERVICE_NAME` | No | `agent-tool-server-offerup` | Service identity |
-| `SERVICE_VERSION` / `GIT_SHA` | No | development values | Build metadata |
-| `PUBLIC_BASE_URL` | No | unset | OpenAPI server URL |
-| `AUTH_MODE` | Hosted | `api-key` | `api-key` or non-production `disabled` |
-| `API_KEYS` | With API-key auth | unset | Comma-separated secrets, each 32+ characters |
-| `RATE_LIMIT_MAX` | No | `120` | Requests per window; `0` disables locally |
-| `RATE_LIMIT_WINDOW_MS` | No | `60000` | Rate window |
-| `REQUEST_TIMEOUT_MS` | No | `15000` | HTTP request timeout, max 120 seconds |
-| `BODY_LIMIT_BYTES` | No | `262144` | Request body limit, max 1 MB |
+| Variable                      | Required          | Default                     | Purpose                                      |
+| ----------------------------- | ----------------- | --------------------------- | -------------------------------------------- |
+| `NODE_ENV`                    | No                | `development`               | `development`, `test`, or `production`       |
+| `PORT` / `HOST`               | No                | `8080` / `0.0.0.0`          | Listener                                     |
+| `LOG_LEVEL`                   | No                | `info`                      | Structured log level                         |
+| `SERVICE_NAME`                | No                | `agent-tool-server-offerup` | Service identity                             |
+| `SERVICE_VERSION` / `GIT_SHA` | No                | development values          | Build metadata                               |
+| `PUBLIC_BASE_URL`             | No                | unset                       | OpenAPI server URL                           |
+| `AUTH_MODE`                   | Hosted            | `api-key`                   | `api-key` or non-production `disabled`       |
+| `API_KEYS`                    | With API-key auth | unset                       | Comma-separated secrets, each 32+ characters |
+| `RATE_LIMIT_MAX`              | No                | `120`                       | Requests per window; `0` disables locally    |
+| `RATE_LIMIT_WINDOW_MS`        | No                | `60000`                     | Rate window                                  |
+| `REQUEST_TIMEOUT_MS`          | No                | `15000`                     | HTTP request timeout, max 120 seconds        |
+| `BODY_LIMIT_BYTES`            | No                | `262144`                    | Request body limit, max 1 MB                 |
 
 Blank optional variables are removed before validation.
 

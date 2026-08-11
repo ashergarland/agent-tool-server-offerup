@@ -5,8 +5,7 @@ const availability: ProviderAvailability = {
   configured: false,
   authorizedApiFound: false,
   marketplaceCapabilitiesAvailable: false,
-  reason:
-    'No public, authorized OfferUp marketplace API for third-party listing access was found.',
+  reason: 'No public, authorized OfferUp marketplace API for third-party listing access was found.',
   enablementRequirements: [
     'A written OfferUp partner agreement authorizing the intended use case',
     'Official API documentation, endpoint base URL, and version',

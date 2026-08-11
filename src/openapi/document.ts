@@ -139,8 +139,6 @@ export const buildOpenApiDocument = (config: AppConfig, registry: ToolRegistry):
       },
     },
     paths,
-    tags: [
-      { name: 'read', description: 'Read-only server and integration information.' },
-    ],
+    tags: [{ name: 'read', description: 'Read-only server and integration information.' }],
   };
 };

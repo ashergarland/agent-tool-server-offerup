@@ -1,9 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { z } from 'zod';
 
-const repositoryUrl = z.literal(
-  'https://github.com/ashergarland/agent-tool-server-offerup',
-);
+const repositoryUrl = z.literal('https://github.com/ashergarland/agent-tool-server-offerup');
 const serverSchema = z
   .object({
     $schema: z.literal(
@@ -37,14 +35,7 @@ const registrySchema = z
       hosting: z.enum(['self-hosted', 'hosted', 'planned', 'unavailable']),
       authentication: z
         .array(
-          z.enum([
-            'api-key',
-            'bearer-token',
-            'entra-jwt',
-            'managed-identity',
-            'oauth2',
-            'none',
-          ]),
+          z.enum(['api-key', 'bearer-token', 'entra-jwt', 'managed-identity', 'oauth2', 'none']),
         )
         .min(1),
       requiredConfiguration: z.array(
@@ -76,12 +67,7 @@ const registrySchema = z
       explicitMutationConfirmation: claim,
       dryRun: claim,
       auditLogging: claim,
-      credentialPersistence: z.enum([
-        'none',
-        'memory-only',
-        'external-store',
-        'not-documented',
-      ]),
+      credentialPersistence: z.enum(['none', 'memory-only', 'external-store', 'not-documented']),
       inputValidation: claim,
       outputValidation: claim,
       rateLimiting: claim,
@@ -98,8 +84,7 @@ const registrySchema = z
   })
   .strict();
 
-const load = async (path: string): Promise<unknown> =>
-  JSON.parse(await readFile(path, 'utf8'));
+const load = async (path: string): Promise<unknown> => JSON.parse(await readFile(path, 'utf8'));
 
 const server = serverSchema.parse(await load('server.json'));
 const registry = registrySchema.parse(await load('examples/central-registry-entry.json'));

@@ -48,7 +48,13 @@ export const integrationStatusTool = defineTool({
   kind: 'read',
   inputSchema: z.object({}),
   outputSchema: integrationStatusSchema,
-  handler: (_input, services) => services.integration.status(),
+  handler: async (_input, services) => {
+    const status = await services.integration.status();
+    return {
+      ...status,
+      enablementRequirements: [...status.enablementRequirements],
+    };
+  },
 });
 
 export const toolDefinitions = [integrationStatusTool] as const satisfies readonly ToolDefinition[];

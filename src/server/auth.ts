@@ -1,4 +1,4 @@
-import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { randomBytes, scrypt, scryptSync, timingSafeEqual } from 'node:crypto';
 import type { FastifyRequest } from 'fastify';
 import type { AppConfig } from '../config/index.js';
 import { unauthorized } from '../errors.js';
@@ -28,29 +28,44 @@ class DisabledAuthenticator implements Authenticator {
 }
 
 class ApiKeyAuthenticator implements Authenticator {
-  private readonly secret = randomBytes(32);
-  private readonly apiKeys: ReadonlyArray<{ digest: Buffer; principalId: string }>;
+  private readonly apiKeys: ReadonlyArray<{
+    digest: Buffer;
+    salt: Buffer;
+    principalId: string;
+  }>;
 
   public constructor(apiKeys: readonly string[]) {
-    this.apiKeys = apiKeys.map((value, index) => ({
-      digest: this.digest(value),
-      principalId: `key:${index + 1}`,
-    }));
+    this.apiKeys = apiKeys.map((value, index) => {
+      const salt = randomBytes(16);
+      return {
+        digest: scryptSync(value, salt, 64),
+        salt,
+        principalId: `key:${index + 1}`,
+      };
+    });
   }
 
-  private digest(value: string): Buffer {
-    return createHmac('sha256', this.secret).update(value, 'utf8').digest();
+  private digest(value: string, salt: Buffer): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      scrypt(value, salt, 64, (error, derivedKey) => {
+        if (error) reject(error);
+        else resolve(derivedKey);
+      });
+    });
   }
 
-  public authenticate(request: FastifyRequest): Promise<Principal> {
+  public async authenticate(request: FastifyRequest): Promise<Principal> {
     const presented = credential(request);
     if (!presented) throw unauthorized('Missing bearer token or x-api-key header');
-    const presentedDigest = this.digest(presented);
-    const match = this.apiKeys.find((candidate) =>
-      timingSafeEqual(candidate.digest, presentedDigest),
+    const matches = await Promise.all(
+      this.apiKeys.map(async (candidate) =>
+        timingSafeEqual(candidate.digest, await this.digest(presented, candidate.salt)),
+      ),
     );
-    if (!match) throw unauthorized('Invalid API key');
-    return Promise.resolve({ id: match.principalId, kind: 'api-key' });
+    const matchIndex = matches.indexOf(true);
+    const principalId = this.apiKeys[matchIndex]?.principalId;
+    if (!principalId) throw unauthorized('Invalid API key');
+    return { id: principalId, kind: 'api-key' };
   }
 }
 

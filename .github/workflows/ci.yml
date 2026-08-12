@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:coverage
+      - run: npm run build
+      - run: npm run openapi:emit
+      - run: npm run openapi:validate
+      - run: npm run metadata:validate
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: openapi
+          path: openapi.json
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          load: true
+          push: false
+          tags: agent-tool-server-offerup:test
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          API_KEY='ci-only-key-0000000000000000000000000000000000000000000000000000'
+          docker run --rm -d --name tool-server -p 8080:8080 \
+            -e API_KEYS="$API_KEY" agent-tool-server-offerup:test
+          trap 'docker logs tool-server; docker stop tool-server' EXIT
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8080/health && break
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/version
+          curl --fail --silent http://127.0.0.1:8080/openapi.json
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            http://127.0.0.1:8080/tools)" = 401
+          curl --fail --silent -H "x-api-key: $API_KEY" http://127.0.0.1:8080/tools
+          test "$(docker inspect --format '{{.Config.User}}' tool-server)" = node
+
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install Bicep
+        run: az bicep install
+      - name: Build and lint Bicep
+        run: |
+          while IFS= read -r file; do
+            az bicep build --file "$file" --stdout >/dev/null
+            az bicep lint --file "$file"
+          done < <(find infra -name '*.bicep' -type f | sort)
+          az bicep build-params --file infra/parameters/dev.bicepparam

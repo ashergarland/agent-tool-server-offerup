@@ -69,6 +69,9 @@ export const buildConfig = (env: Env): AppConfig => {
     if (env.API_KEYS.length === 0) {
       throw new ConfigurationError('AUTH_MODE=api-key requires API_KEYS');
     }
+    if (env.API_KEYS.length > 10) {
+      throw new ConfigurationError('API_KEYS must contain at most 10 keys');
+    }
     if (env.API_KEYS.some((key) => key.length < 32)) {
       throw new ConfigurationError('Every API key must be at least 32 characters');
     }

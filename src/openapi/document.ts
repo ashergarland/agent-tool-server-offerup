@@ -118,9 +118,8 @@ export const buildOpenApiDocument = (config: AppConfig, registry: ToolRegistry):
   };
   for (const tool of registry.list()) paths[`/tools/${tool.name}`] = toolPath(tool);
 
-  return {
     openapi: '3.1.0',
-    info: {
+    jsonSchemaDialect: 'http://json-schema.org/draft-07/schema#',
       title: 'OfferUp Agent Tool Server',
       version: config.service.version,
       description:

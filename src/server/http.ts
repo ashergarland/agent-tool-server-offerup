@@ -85,9 +85,7 @@ export const createHttpServer = ({
     gitSha: config.service.gitSha,
     node: process.version,
     environment: config.env,
-    capabilities: {
-      transports: ['stdio', 'streamable-http', 'http-openapi'],
-      tools: registry.list().map((tool) => tool.name),
+      transports: ['stdio', 'streamable-http', 'openapi-http'],
       marketplaceOperations: [],
       mutationsAvailable: false,
       provider: {

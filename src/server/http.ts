@@ -54,13 +54,7 @@ export const createHttpServer = ({
     config.http.rateLimit.windowMs,
   );
 
-  const rateLimitError = (reply: FastifyReply, decision: RateLimitDecision): AppError => {
-    void reply.header(
-      'retry-after',
-      String(Math.max(1, Math.ceil((decision.resetAtMs - Date.now()) / 1000))),
-    );
-    return new AppError('rate_limited', 'Too many requests; slow down and retry');
-  };
+    return new AppError('rate_limited', 'Too many requests; slow down and retry', undefined, true);
 
   app.addHook('onSend', (request, reply, payload, done) => {
     void reply.header('x-request-id', request.id);

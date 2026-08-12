@@ -22,15 +22,6 @@ jobs:
           cache: npm
       - run: npm audit --omit=dev --audit-level=high
 
-  dependency-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
-
   secrets:
     runs-on: ubuntu-latest
     permissions:

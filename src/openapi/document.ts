@@ -29,7 +29,6 @@ const errorResponses: JsonObject = Object.fromEntries(
     [404, 'Unknown tool or resource'],
     [429, 'Rate limited'],
     [500, 'Tool server failure'],
-    [502, 'Provider failure'],
   ].map(([status, description]) => [
     String(status),
     {
